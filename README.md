@@ -98,3 +98,5 @@ Ajouter le ligne suivante au fichier `arc/App/app.component.html`
 ```html
 <div appCopyright></div>
 ```
+
+Le texte `© 2019 all right reserved.` apparait sur le rendu navigateur.
