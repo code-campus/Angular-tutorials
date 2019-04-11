@@ -1,35 +1,65 @@
-# Création d'un projet Angular
+# Les directives
 > ### Objectifs :
-> Savoir créer un nouveau projet Angular avec le gestionaire NG
-> ### Notes :
-> Dans ce cours, le terme **my-project** réprésente le nom du projet. Remplacez ce terme par le nom de votre projet.
+> Savoir créer et comprendre les directives.
 
 
 
-
-# Création d'un projet 
+# Création d'un nouveau projet
 
 ```bash
 ng new my-project
-```
-
-Avant d'installer le projet, plusieurs question vous seront posées afin de déterminer quelles dépendances de base Angular doit installer :
-
-```bash
-? Would you like to add Angular routing? (y/N)
-? Which stylesheet format would you like to use? (Use arrow keys)
-❯ CSS
-  Sass   [ http://sass-lang.com   ]
-  Less   [ http://lesscss.org     ]
-  Stylus [ http://stylus-lang.com ]
-```
-
-
-
-# Se rendre dans le répertoire du projet
-
-Pensez maintenant à pointer votre Terminal dans le répertoire de votre nouveau projet pour pouvoir travailler.
-
-```bash
 cd my-project
+```
+
+
+
+# Démarrer le Serveur de développement
+
+```bash
+ng serve
+```
+
+
+
+# Créer une directive
+
+## Méthode 1
+
+```bash
+ng generate directive 
+```
+
+Avant de créer la directive, Angular-CLI vous demande quel sera le nom de la directive.  
+Créons la directive qui nous servira à afficher le copyrigth
+
+```bash
+? What name would you like to use for the directive? copyright
+```
+
+## Méthode 2
+
+Il est également possible de nommer la directive directement dans la commande :
+
+```bash
+ng generate directive copyright
+```
+
+## Mise à jour de l'application
+
+La commande créer les fichier `copyright.directive.spec.ts` et `copyright.directive.ts`, puis met à jour le module principal.
+
+```bash
+> CREATE src/app/copyright.directive.spec.ts (245 bytes)
+> CREATE src/app/copyright.directive.ts (151 bytes)
+> UPDATE src/app/app.module.ts (484 bytes)
+```
+
+
+
+# Bonne pratique
+
+Il est préférable de d'organiser les directives dans un répertoire `app/Directives`
+
+```bash
+ng generate directive Directives/copyright/copyright
 ```

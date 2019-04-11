@@ -3,10 +3,12 @@ import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { CopyrightDirective } from './Directives/copyright/copyright.directive';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    CopyrightDirective
   ],
   imports: [
     BrowserModule,
