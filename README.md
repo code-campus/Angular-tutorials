@@ -62,4 +62,7 @@ Il est préférable de d'organiser les directives dans un répertoire `app/Direc
 
 ```bash
 ng generate directive Directives/copyright/copyright
+> CREATE src/app/Directives/copyright/copyright.directive.spec.ts (245 bytes)
+> CREATE src/app/Directives/copyright/copyright.directive.ts (151 bytes)
+> UPDATE src/app/app.module.ts (484 bytes)
 ```
