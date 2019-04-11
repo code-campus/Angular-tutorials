@@ -26,7 +26,6 @@ Avant d'installer le projet, plusieurs question vous seront posées afin de dét
 
 
 
-
 # Se rendre dans le répertoire du projet
 
 Pensez maintenant à pointer votre Terminal dans le répertoire de votre nouveau projet pour pouvoir travailler.
