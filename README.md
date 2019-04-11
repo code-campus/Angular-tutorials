@@ -7,29 +7,51 @@
 
 
 
-# Création d'un projet 
+# Création d'un nouveau projet
 
 ```bash
 ng new my-project
-```
-
-Avant d'installer le projet, plusieurs question vous seront posées afin de déterminer quelles dépendances de base Angular doit installer :
-
-```bash
-? Would you like to add Angular routing? (y/N)
-? Which stylesheet format would you like to use? (Use arrow keys)
-❯ CSS
-  Sass   [ http://sass-lang.com   ]
-  Less   [ http://lesscss.org     ]
-  Stylus [ http://stylus-lang.com ]
-```
-
-
-
-# Se rendre dans le répertoire du projet
-
-Pensez maintenant à pointer votre Terminal dans le répertoire de votre nouveau projet pour pouvoir travailler.
-
-```bash
 cd my-project
+```
+
+
+
+# Démarrer le Serveur de développement
+
+```bash
+ng serve
+```
+
+
+
+# Les options de la commande `serve`
+
+## Choix du port d'écoute
+
+```bash
+ng serve --port=4200
+```
+
+## Ouverture automatique du navigateur
+
+```bash
+ng serve --open
+ng serve -o
+```
+
+
+
+# Utils
+
+```bash
+ng serve --port=8080 --open --disable-host-check
+```
+```bash
+ng serve --port=8080 --disable-host-check
+```
+```bash
+ng serve --open --disable-host-check
+```
+```bash
+ng serve --disable-host-check
 ```
