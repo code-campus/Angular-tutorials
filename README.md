@@ -66,3 +66,35 @@ ng generate directive Directives/copyright/copyright
 > CREATE src/app/Directives/copyright/copyright.directive.ts (151 bytes)
 > UPDATE src/app/app.module.ts (484 bytes)
 ```
+
+
+
+# Modifier le fichier TypeScript
+
+```typescript
+import { Directive, ElementRef } from '@angular/core';
+
+@Directive({
+  selector: '[appCopyright]'
+})
+export class CopyrightDirective {
+
+  date = new Date();
+  year = this.date.getFullYear();
+
+  constructor(private el: ElementRef) {
+    this.el.nativeElement.innerHTML = '&copy '+ this.year +' all right reserved.';
+  }
+
+}
+```
+
+
+
+# Utilisation
+
+Ajouter le ligne suivante au fichier `arc/App/app.component.html`
+
+```html
+<div appCopyright></div>
+```
