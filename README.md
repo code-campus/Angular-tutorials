@@ -1,8 +1,6 @@
-# Création d'un projet Angular
+# Le serveur de développement
 > ### Objectifs :
-> Savoir créer un nouveau projet Angular avec le gestionaire NG
-> ### Notes :
-> Dans ce cours, le terme **my-project** réprésente le nom du projet. Remplacez ce terme par le nom de votre projet.
+> Savoir démarrer et connaitre les options du serveur de développement Angular
 
 
 
