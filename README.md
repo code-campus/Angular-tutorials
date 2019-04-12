@@ -12,4 +12,5 @@
 - Chapitre 08 : [Les interfaces](https://github.com/OSW3-Campus/Angular-tutorials/tree/chapter-08)
 - Chapitre 09 : [Les enums](https://github.com/OSW3-Campus/Angular-tutorials/tree/chapter-09)
 - Chapitre 10 : [Les modules](https://github.com/OSW3-Campus/Angular-tutorials/tree/chapter-10)
-- Chapitre 11 : [Les tests unitaires](https://github.com/OSW3-Campus/Angular-tutorials/tree/chapter-11)
+- Chapitre 11 : [Le routage](https://github.com/OSW3-Campus/Angular-tutorials/tree/chapter-11)
+- Chapitre 12 : [Les tests unitaires](https://github.com/OSW3-Campus/Angular-tutorials/tree/chapter-12)
