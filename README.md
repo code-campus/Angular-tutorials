@@ -71,6 +71,8 @@ ng generate directive Directives/copyright/copyright
 
 # Modifier le fichier TypeScript
 
+Modifier le fichier `src/app/Directives/copyright/copyright.directive.ts`
+
 ```typescript
 import { Directive, ElementRef } from '@angular/core';
 
