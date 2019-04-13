@@ -14,3 +14,10 @@
 - Chapitre 10 : [Les modules](https://github.com/OSW3-Campus/Angular-tutorials/tree/chapter-10)
 - Chapitre 11 : [Le routage](https://github.com/OSW3-Campus/Angular-tutorials/tree/chapter-11)
 - Chapitre 12 : [Les tests unitaires](https://github.com/OSW3-Campus/Angular-tutorials/tree/chapter-12)
+
+
+---
+
+# Les fonctionnalités essentielles
+
+- Chapitre xx : [Web Services REST](https://github.com/OSW3-Campus/Angular-tutorials/tree/web-services)
