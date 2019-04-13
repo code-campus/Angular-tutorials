@@ -1,6 +1,8 @@
 # Web Services REST
 > ### Objectifs :
 > Savoir interoger un serveur distant et afficher les données retournées
+> ### Note :
+> Les exemples utilisent la Fake API de http://jsonplaceholder.typicode.com/
 
 
 
@@ -66,12 +68,12 @@ export class AppComponent implements OnInit {
 
 
 
-# Créer une requête HTTP
+# Récupérer des données
 
-Dans le fichier `app/app.component.ts`
+Créer une requête HTTP dans le fichier `app/app.component.ts`
 
 
-## Interrogation de l'API GitHub
+## Interrogation de l'API
 
 ```typescript
 export class BooksComponent implements OnInit {
@@ -81,7 +83,7 @@ export class BooksComponent implements OnInit {
 
   ngOnInit() {
     
-    this.http.get('https://api.github.com/users/OSW3-Campus').subscribe(data => {
+    this.http.get('http://jsonplaceholder.typicode.com/users/2').subscribe(data => {
       console.log(data);
     });
   
@@ -93,10 +95,10 @@ export class BooksComponent implements OnInit {
 
 ## Une réponse typée
 
-Lorsqu'on essaye d'accèder à la propriété `login`, on obtient l'erreur : " Property 'login' does not exist on type 'Object'."
+Lorsqu'on essaye d'accèder à la propriété `username`, on obtient l'erreur : " Property 'username' does not exist on type 'Object'."
 
 ```javascript
-console.log(data.login);
+console.log(data.username);
 ```
 
 ### Création d'une `interface`
@@ -105,8 +107,8 @@ Créer l'interface `UserResponse` avant le décorateur `@Component`
 
 ```typescript
 interface UserResponse {
-  login: string;
-  bio: string;
+  username: string;
+  email: string;
   company: string;
 }
 ```
@@ -116,8 +118,8 @@ interface UserResponse {
 Utiliser l'interface lors de la requête HTTP.
 
 ```typescript
-this.http.get<UserResponse>('https://api.github.com/users/OSW3-Campus').subscribe(data => {
-  console.log(data.login);
+this.http.get<UserResponse>('http://jsonplaceholder.typicode.com/users/2').subscribe(data => {
+  console.log(data.username);
 });
 ```
 
@@ -129,10 +131,10 @@ this.http.get<UserResponse>('https://api.github.com/users/OSW3-Campus').subscrib
 Capturer une erreur pour executer une alternative
 
 ```typescript
-this.http.get<UserResponse>('https://api.github.com/users/OSW3---Campus').subscribe(
+this.http.get<UserResponse>('http://jsonplaceholder.typicode.com/users/42').subscribe(
   data => {
-    console.log("User Login: " + data.login);
-    console.log("Bio: " + data.bio);
+    console.log("Username: " + data.username);
+    console.log("Email: " + data.email);
     console.log("Company: " + data.company);
   },
   err => {
@@ -148,10 +150,10 @@ Les message d'erreur sont de type `HttpErrorResponse`
 ```typescript
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 // ...
-this.http.get<UserResponse>('https://api.github.com/users/OSW3---Campus').subscribe(
+this.http.get<UserResponse>('http://jsonplaceholder.typicode.com/users/42').subscribe(
   data => {
-    console.log("User Login: " + data.login);
-    console.log("Bio: " + data.bio);
+    console.log("Username: " + data.username);
+    console.log("Email: " + data.email);
     console.log("Company: " + data.company);
   },
   (err: HttpErrorResponse) => {
@@ -163,3 +165,23 @@ this.http.get<UserResponse>('https://api.github.com/users/OSW3---Campus').subscr
   }
 );
 ``` 
+
+
+
+# Envoyer des données
+
+```typescript
+this.http.post('http://jsonplaceholder.typicode.com/posts', {
+  title: 'foo',
+  body: 'bar',
+  userId: 1
+})
+.subscribe(
+  res => {
+    console.log(res);
+  },
+  err => {
+    console.log("Error occured");
+  }
+);
+```
