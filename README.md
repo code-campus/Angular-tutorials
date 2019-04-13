@@ -1,47 +1,165 @@
-# Création d'un projet Angular
+# Web Services REST
 > ### Objectifs :
-> Savoir créer un nouveau projet Angular avec le gestionaire NG
-> ### Notes :
-> Dans ce cours, le terme **my-project** réprésente le nom du projet. Remplacez ce terme par le nom de votre projet.
+> Savoir interoger un serveur distant et afficher les données retournées
 
 
 
 
-# Création d'un projet 
+# Création d'un nouveau projet
 
 ```bash
-ng new my-project
-```
-
-Avant d'installer le projet, plusieurs question vous seront posées afin de déterminer quelles dépendances de base Angular doit installer :
-
-```bash
-? Would you like to add Angular routing? (y/N)
-? Which stylesheet format would you like to use? (Use arrow keys)
-❯ CSS
-  Sass   [ http://sass-lang.com   ]
-  Less   [ http://lesscss.org     ]
-  Stylus [ http://stylus-lang.com ]
-```
-
-
-
-# Se rendre dans le répertoire du projet
-
-Pensez maintenant à pointer votre Terminal dans le répertoire de votre nouveau projet pour pouvoir travailler.
-
-```bash
+ng new my-project --style=less --routing
 cd my-project
 ```
 
 
 
-# Utiliser les options
-
-- L'option `--style` permet de définir le format des feuilles de style.
-- L'option `--routing` permet d'importer et déclarer le module de routage.
+# Démarrer le Serveur de développement
 
 ```bash
-ng new my-project --style=less --routing
-ng new my-project --style=sass --routing=false
+ng serve
 ```
+
+
+
+# Importer le module `HttpClient` 
+
+## Importer le module `HttpClient` dans le module principal
+
+Dans le fichier `app/app.module.ts`
+
+```typescript
+import { HttpClientModule } from '@angular/common/http';
+
+@NgModule({
+  imports: [
+    // ...
+    HttpClientModule
+  ],
+})
+```
+
+
+
+## Importer le module `HttpClient` dans votre composant
+
+Dans le fichier `app/app.component.ts`
+
+```typescript
+import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.less']
+})
+export class AppComponent implements OnInit {
+  title = 'my-project';
+
+  constructor(private http: HttpClient) { }
+
+  ngOnInit() {}
+
+}
+```
+
+
+
+# Créer une requête HTTP
+
+Dans le fichier `app/app.component.ts`
+
+
+## Interrogation de l'API GitHub
+
+```typescript
+export class BooksComponent implements OnInit {
+  title = 'my-project';
+
+  constructor(private http: HttpClient) { }
+
+  ngOnInit() {
+    
+    this.http.get('https://api.github.com/users/OSW3-Campus').subscribe(data => {
+      console.log(data);
+    });
+  
+  }
+
+}
+``` 
+
+
+## Une réponse typée
+
+Lorsqu'on essaye d'accèder à la propriété `login`, on obtient l'erreur : " Property 'login' does not exist on type 'Object'."
+
+```javascript
+console.log(data.login);
+```
+
+### Création d'une `interface`
+
+Créer l'interface `UserResponse` avant le décorateur `@Component`
+
+```typescript
+interface UserResponse {
+  login: string;
+  bio: string;
+  company: string;
+}
+```
+
+### Typer la requête HTTP
+
+Utiliser l'interface lors de la requête HTTP.
+
+```typescript
+this.http.get<UserResponse>('https://api.github.com/users/OSW3-Campus').subscribe(data => {
+  console.log(data.login);
+});
+```
+
+
+## Gestion des erreurs
+
+### Capturer l'erreur
+
+Capturer une erreur pour executer une alternative
+
+```typescript
+this.http.get<UserResponse>('https://api.github.com/users/OSW3---Campus').subscribe(
+  data => {
+    console.log("User Login: " + data.login);
+    console.log("Bio: " + data.bio);
+    console.log("Company: " + data.company);
+  },
+  err => {
+    console.log("Une erreur s'est produite.");
+  }
+);
+``` 
+
+### Capturer le message d'erreur
+
+Les message d'erreur sont de type `HttpErrorResponse`
+
+```typescript
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+// ...
+this.http.get<UserResponse>('https://api.github.com/users/OSW3---Campus').subscribe(
+  data => {
+    console.log("User Login: " + data.login);
+    console.log("Bio: " + data.bio);
+    console.log("Company: " + data.company);
+  },
+  (err: HttpErrorResponse) => {
+    if (err.error instanceof Error) {
+      console.log("Client-side error occured.");
+    } else {
+      console.log("Server-side error occured.");
+    }
+  }
+);
+``` 
