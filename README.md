@@ -33,3 +33,15 @@ Pensez maintenant à pointer votre Terminal dans le répertoire de votre nouveau
 ```bash
 cd my-project
 ```
+
+
+
+# Utiliser les options
+
+- L'option `--style` permet de définir le format des feuilles de style.
+- L'option `--routing` permet d'importer et déclarer le module de routage.
+
+```bash
+ng new my-project --style=less --routing
+ng new my-project --style=sass --routing=false
+```
