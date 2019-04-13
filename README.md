@@ -20,4 +20,5 @@
 
 # Les fonctionnalités essentielles
 
-- Chapitre xx : [Web Services REST](https://github.com/OSW3-Campus/Angular-tutorials/tree/web-services)
+- Chapitre xx : [Web Services](https://github.com/OSW3-Campus/Angular-tutorials/tree/web-services)
+- Chapitre xx : [C.R.U.D. en Web Services](https://github.com/OSW3-Campus/Angular-tutorials/tree/crud-web-services)
