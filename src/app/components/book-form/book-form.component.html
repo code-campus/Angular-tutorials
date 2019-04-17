@@ -1,0 +1,57 @@
+<div class="container">
+  <h1>Book Form</h1>
+
+  <form #bookForm="ngForm" (ngSubmit)="onSubmit( bookForm )">
+
+    <div class="form-group">
+
+      <label for="title">Title</label>
+      
+      <input 
+        type="text" 
+        id="title" 
+        name="title"
+        [(ngModel)]="model.title"
+        #title="ngModel"
+        class="form-control" 
+        required
+        #spyTitle>
+
+      <div *ngIf="title.touched && title.invalid">Title is required</div>
+
+    </div>
+
+    
+
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea 
+        id="description" 
+        name="description" 
+        [(ngModel)]="model.description"
+        class="form-control"
+        cols="30" 
+        rows="10"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="price">Price</label>
+      <input 
+        type="number" 
+        id="price"
+        name="price" 
+        [(ngModel)]="model.price"
+        step="0.01" 
+        class="form-control"
+        required>
+    </div>
+
+    <button type="submit" class="btn btn-success">Submit</button>
+  </form>
+  
+  <pre>{{diagnostic}}</pre>
+  <pre>{{ bookForm }}</pre>
+  <pre>Is submitted : {{submitted}}</pre>
+  <pre>Title : Classname="{{spyTitle.className}}"</pre>
+  
+</div>
