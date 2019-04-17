@@ -20,7 +20,7 @@
 ## Les formulaires
 
 - Chapitre 12 : [Les formulaires (Reactive Forms)](https://github.com/OSW3-Campus/Angular-tutorials/tree/reactive-form)
-- Chapitre 13 : [Les formulaires basés sur un model (Template Driven Forms)](https://github.com/OSW3-Campus/Angular-tutorials/tree/tepmlate-driven-form)
+- Chapitre 13 : [Les formulaires basés sur un model (Template Driven Forms)](https://github.com/OSW3-Campus/Angular-tutorials/tree/template-driven-form)
 
 
 ---
