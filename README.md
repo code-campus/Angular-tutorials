@@ -13,13 +13,19 @@
 - Chapitre 09 : [Les enums](https://github.com/OSW3-Campus/Angular-tutorials/tree/chapter-09)
 - Chapitre 10 : [Les modules](https://github.com/OSW3-Campus/Angular-tutorials/tree/chapter-10)
 - Chapitre 11 : [Le routage](https://github.com/OSW3-Campus/Angular-tutorials/tree/chapter-11)
-- Chapitre 12 : [Les formulaires (Reactive Forms)](https://github.com/OSW3-Campus/Angular-tutorials/tree/reactive-form)
-- Chapitre 1 : [Les formulaires (Template Driven Forms)](https://github.com/OSW3-Campus/Angular-tutorials/tree/tepmlate-driven-form)
 
 
 ---
 
-# Les fonctionnalités essentielles
+## Les formulaires
+
+- Chapitre 12 : [Les formulaires (Reactive Forms)](https://github.com/OSW3-Campus/Angular-tutorials/tree/reactive-form)
+- Chapitre 13 : [Les formulaires basés sur un model (Template Driven Forms)](https://github.com/OSW3-Campus/Angular-tutorials/tree/tepmlate-driven-form)
+
+
+---
+
+## Les fonctionnalités essentielles
 
 - Chapitre xx : [Web Services](https://github.com/OSW3-Campus/Angular-tutorials/tree/web-services)
 - Chapitre xx : [C.R.U.D. en Web Services (modules + components + services)](https://github.com/OSW3-Campus/Angular-tutorials/tree/crud-web-services)
