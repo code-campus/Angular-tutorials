@@ -1,8 +1,9 @@
-# C.R.U.D. en Web Services (modules + components + services)
+# C.R.U.D. en Web Services (avancé)
 > ### Objectifs :
 > Savoir manipuler les données sur un serveur via un Web Services
 > ### Notes :
 > Ce cours est la suite du cours [Symfony : C.R.U.D. en Web Services](https://github.com/OSW3-Campus/Symfony4-tutorials/tree/crud-webservice)
+> Ce cours reprend le cours [C.R.U.D. en Web Services](https://github.com/OSW3-Campus/Angular-tutorials/tree/crud-web-services) et optimise le module avec l'ajout du service `BookService` qui gère les requêtes HTTP.
 
 
 
@@ -194,6 +195,119 @@ export class Book implements BookInterface {
 
 
 
+# Création du service
+
+Le service va permettre le passge d'information entre les composants du module.
+
+## Création du service
+
+```bash
+ng generate service modules/books/services/books
+```
+
+
+## Importer les dépendances du service
+
+Importer les dépendances du service dans le fichier du composant `app/modules/books/services/book.service.ts`.
+
+- Le module de requêtes HTTP `@angular/common/http`
+- Le module `rxjs`
+- Le module `rxjs/operators`
+
+```typescript
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders, HttpResponse, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+
+import { BookInterface, BooksInterface } from './../interfaces/books';
+// ...
+const Headers = new HttpHeaders({
+  'Content-Type': 'application/json' 
+});
+// ...
+constructor(private http: HttpClient) {}
+```
+
+
+## Ajouter les méthodes
+
+### La méthode `handleError`
+
+La méthode `handleError` permet de gérer les erreur HTTP au niveau du service.
+
+```typescript
+private handleError(error: HttpErrorResponse) {
+  if (error.error instanceof ErrorEvent) {
+    console.error('An error occurred:', error.error.message);
+  } else {
+    console.error(
+      `Backend returned code ${error.status}, `);
+  }
+  return throwError(
+    'Something bad happened; please try again later.');
+};
+```
+
+### La méthode `url`
+
+La méthode `url` permet de construire dynamiquement l'url de la requête HTTP.
+
+```typescript
+private url(id: number = null): string {
+  let endpoint = 'http://127.0.0.1:8000/api/books';
+  if (id != null) endpoint+= '/'+id;
+  return endpoint+'.json';
+};
+```
+
+### La méthode `getBooks`
+
+La méthode `getBooks` permet de récupérer la liste des livres.
+
+```typescript
+getBooks(): Observable<HttpResponse<BooksInterface>> {
+  return this.http.get<BooksInterface>(
+    this.url(), { observe: 'response' }
+  ).pipe(
+    catchError(this.handleError)
+  );
+}
+```
+
+### La méthode `getBook`
+
+La méthode `getBook` permet de récupérer les information d'un livre.  
+Cette méthode prend l'ID du livre en entré.
+
+```typescript
+getBook(id: number): Observable<HttpResponse<BookInterface>> {
+  return this.http.get<BookInterface>(
+    this.url(id), { observe: 'response' }
+  ).pipe(
+    catchError(this.handleError)
+  );
+}
+```
+
+### La méthode `deleteBook`
+
+La méthode `deleteBook` permet de supprimer les information d'un livre.  
+Cette méthode prend l'ID du livre en entré.
+
+```typescript
+deleteBook(id: number) {
+  return this.http.delete(
+    this.url(id)
+  ).pipe(
+    catchError(this.handleError)
+  );
+}
+```
+
+
+
+
 # Création des composants
 
 ## Le composant `index`
@@ -227,16 +341,16 @@ import { IndexComponent } from './components/index/index.component';
 
 Importer les dépendances du composant dans le fichier du composant `index.component.ts`.
 
-- Le module de requêtes HTTP `@angular/common/http`
+- Le service `BooksService`
 - L'interface `BooksInterface`
 
 ```typescript
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { BooksService } from './../../services/books.service';
 import { BooksInterface } from './../../interfaces/books';
 
 // ...
-constructor(private http: HttpClient) { }
+constructor(private booksService: BooksService) { }
 ```
 
 
@@ -254,6 +368,9 @@ Préparer la vue pour l'affichage de la liste des livres.
 </ng-template>
 
 <ng-template #loaded>
+  
+  <div [hidden]="!error">{{ error }}</div>
+
   <ul>
 
     <li *ngFor="let book of books; let i = index">
@@ -289,13 +406,16 @@ Ajouter la requête dans la classe IndexComponent
 export class IndexComponent implements OnInit {
 
   isLoading: boolean = true;
+  error: string = null;
   books: BooksInterface;
 
-  constructor(private http: HttpClient) { }
+  constructor(private booksService: BooksService) { }
 
   ngOnInit() {
-    this.http.get<BooksInterface>('http://jsonplaceholder.typicode.com/posts').subscribe(data => {
-      this.books = data;
+    this.booksService.getBooks().subscribe(
+      resp => this.books = resp.body,
+      err => this.error = err
+    ).add(() => {
       this.isLoading = false;
     });
   }
@@ -337,14 +457,14 @@ import { CreateComponent } from './components/create/create.component';
 Importer les dépendances du composant dans le fichier du composant `create.component.ts`.
 
 - Le module de requêtes HTTP `@angular/common/http`
-- Le module de gestion du routage `@angular/router`
+- Le service `BookService`
 - L'interface `BookInterface`
 
 ```typescript
 import { Component } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from "@angular/router"
 
+import { BooksService } from './../../services/books.service';
 import { BookInterface } from './../../interfaces/books';
 // ...
 constructor(
@@ -360,6 +480,8 @@ constructor(
 <h2>Create Book</h2>
 
 <form #bookForm="ngForm" (ngSubmit)="onSubmit( bookForm )">
+
+<div [hidden]="!error">{{ error }}</div>
 
   <div class="form-group">
     <label for="title">Title *</label>
@@ -416,6 +538,7 @@ export class CreateComponent {
 
   isSubmitted = false;
   isSubmission = false;
+  error: string = null;
 
   // Note : on ne met pas la propriété ID
   book: BookInterface = {
@@ -425,7 +548,7 @@ export class CreateComponent {
   };
   
   constructor(
-    private http: HttpClient,
+    private booksService: BooksService,
     private router: Router
   ) {}
 
@@ -436,11 +559,10 @@ export class CreateComponent {
 
     // Le formulaire est valide
     if (valid) {
-      let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-      let httpOptions = { headers: headers };
-
-      this.http.post<BookInterface>('http://127.0.0.1:8000/api/books.json', this.book, httpOptions).subscribe(data => {
-        this.router.navigate(['/book', data.id]);
+      this.booksService.createBook( this.book ).subscribe(
+        resp => this.router.navigate(['/book', resp.body.id]),
+        err => this.error = err
+      ).add(() => {
         this.isSubmission = false;
       });
     } 
@@ -486,19 +608,19 @@ import { DetailsComponent } from './components/details/details.component';
 
 Importer les dépendances du composant dans le fichier du composant `details.component.ts`.
 
-- Le module de requêtes HTTP `@angular/common/http`
 - Le module de gestion du routage `@angular/router`
+- Le service `BooksService`
 - L'interface `BookInterface`
 
 ```typescript
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { BooksService } from './../../services/books.service';
 import { BooksInterface } from './../../interfaces/books';
 
 // ...
 constructor(
-  private http: HttpClient,
+  private booksService: BooksService,
   private route: ActivatedRoute,
   private router: Router
 ) {}
@@ -519,6 +641,8 @@ Préparer la vue pour l'affichage des données d'un livre.
 </ng-template>
 
 <ng-template #loaded>
+  <div [hidden]="!error">{{ error }}</div>
+
   <ul>
     <li>Id: {{ book.id }}</li>
     <li>Title: {{ book.title }}</li>
@@ -539,42 +663,48 @@ Préparer la vue pour l'affichage des données d'un livre.
 
 ```typescript
 export class DetailsComponent implements OnInit {
+
   isLoading: boolean = true;
   inDeletion: boolean = false;
+  error: string = null;
+
   book: BookInterface;
   bookID: number;
 
   constructor(
-    private http: HttpClient,
+    private booksService: BooksService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
 
   ngOnInit(): void {
+
+    // Récupération de la valeur du paramètre ID transmit par l'url
     this.bookID = parseInt(this.route.snapshot.paramMap.get('id'));
-    
-    this.http.get<BookInterface>('http://127.0.0.1:8000/api/books/'+ this.bookID +'.json').subscribe(data => {
-      this.book = data;
+
+    // Interrogation du serveur
+    this.booksService.getBook( this.bookID ).subscribe(
+      resp => this.book = resp.body,
+      err => this.error = err
+    ).add(() => {
       this.isLoading = false;
     });
   }
 
   onDelete(): void {
     this.inDeletion = true;
+
     if (confirm('Delete book id : '+ this.bookID)) {
 
       // Suppression du livre
-      this.http.delete('http://127.0.0.1:8000/api/books/'+ this.bookID +'.json').subscribe(
-        data => {
-          this.router.navigate(['/books']);
-        },
-        err => {
-          this.inDeletion = false;
-        }
-      );
+      this.booksService.deleteBook( this.bookID ).subscribe(
+        resp => this.router.navigate(['/books']),
+        err => this.error = err
+      ).add(() => {
+        this.inDeletion = false;
+      });
 
     }
-
     else {
       this.inDeletion = false;
     }
@@ -622,14 +752,14 @@ Importer les dépendances du composant dans le fichier du composant `create.comp
 
 ```typescript
 import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ActivatedRoute, Router } from "@angular/router"
 
+import { BooksService } from './../../services/books.service';
 import { BookInterface } from './../../interfaces/books';
 import { Book } from './../../classes/books';
 // ...
 constructor(
-    private http: HttpClient,
+    private booksService: BooksService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -650,6 +780,8 @@ constructor(
 <ng-template #loaded>
   <form #bookForm="ngForm" (ngSubmit)="onSubmit( bookForm )">
   
+    <div [hidden]="!error">{{ error }}</div>
+    
     <div class="form-group">
       <label for="title">Title *</label>
       <input 
@@ -707,12 +839,13 @@ export class EditComponent implements OnInit {
   isLoading: boolean = true;
   isSubmitted: boolean = false;
   isSubmission: boolean = false;
+  error: string = null;
 
   book: BookInterface;
   bookID: number;
 
   constructor(
-    private http: HttpClient,
+    private booksService: BooksService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -722,13 +855,15 @@ export class EditComponent implements OnInit {
     this.bookID = parseInt(this.route.snapshot.paramMap.get('id'));
 
     // Interrogation du serveur
-    this.http.get<BookInterface>('http://127.0.0.1:8000/api/books/'+ this.bookID +'.json').subscribe(data => {
-      this.book = new Book(
-        data.id,
-        data.title,
-        data.price,
-        data.description
-      );
+    this.booksService.getBook( this.bookID ).subscribe(
+      resp => this.book = new Book(
+        resp.body.id,
+        resp.body.title,
+        resp.body.price,
+        resp.body.description
+      ),
+      err => this.error = err
+    ).add(() => {
       this.isLoading = false;
     });
   }
@@ -740,22 +875,12 @@ export class EditComponent implements OnInit {
 
     // Le formulaire est valide
     if (valid) {
-      let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-      let httpOptions = { headers: headers };
-
-      this.http.put<BookInterface>('http://127.0.0.1:8000/api/books/'+ this.bookID +'.json', this.book, httpOptions).subscribe(
-        data => {
-          console.log(data);
-          console.log(data.id);
-
-          // Redirection vers la page de détails du livre
-          this.router.navigate(['/book', data.id]);
-          this.isSubmission = false;
-        },
-        err => {
-          this.isSubmission = false;
-        }
-      );
+      this.booksService.editBook( this.book.id, this.book ).subscribe(
+        resp => this.router.navigate(['/book', resp.body.id]),
+        err => this.error = err
+      ).add(() => {
+        this.isSubmission = false;
+      });
     } 
     
     // Le formulaire contient des erreurs
@@ -778,6 +903,7 @@ cd my-project
 ng generate module modules/books --module=app
 ng generate interface modules/books/interfaces/Books
 ng generate interface modules/books/classes/Books
+ng generate service modules/books/services/books
 ng generate component modules/books/components/index
 ng generate component modules/books/components/create
 ng generate component modules/books/components/details

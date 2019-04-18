@@ -7,6 +7,9 @@
 </ng-template>
 
 <ng-template #loaded>
+
+  <div [hidden]="!error">{{ error }}</div>
+
   <ul>
     <li>Id: {{ book.id }}</li>
     <li>Title: {{ book.title }}</li>
@@ -19,4 +22,5 @@
     type="button" 
     [disabled]="inDeletion"
     (click)="onDelete();">Delete</button>
+    
 </ng-template>

@@ -7,10 +7,12 @@
 </ng-template>
 
 <ng-template #loaded>
+
+  <div [hidden]="!error">{{ error }}</div>
+
   <ul>
 
     <li *ngFor="let book of books; let i = index">
-      {{i}}
       <a [routerLink]="['/book', book.id]">{{book.title}}</a>
     </li>
     

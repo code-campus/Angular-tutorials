@@ -2,6 +2,8 @@
 
 <form #bookForm="ngForm" (ngSubmit)="onSubmit( bookForm )">
 
+  <div [hidden]="!error">{{ error }}</div>
+
   <div class="form-group">
     <label for="title">Title *</label>
     <input 
