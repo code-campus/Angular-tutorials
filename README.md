@@ -2,7 +2,7 @@
 > ### Objectifs :
 > Savoir manipuler les données sur un serveur via un Web Services
 > ### Notes :
-> Ce cours est la suite du cours [Symfony : C.R.U.D. en Web Services](https://github.com/OSW3-Campus/Symfony4-tutorials/tree/crud-webservice)
+> Ce cours est la suite du cours [Symfony : C.R.U.D. en Web Services](https://github.com/OSW3-Campus/Symfony4-tutorials/tree/crud-webservice)  
 > Ce cours reprend le cours [C.R.U.D. en Web Services](https://github.com/OSW3-Campus/Angular-tutorials/tree/crud-web-services) et optimise le module avec l'ajout du service `BookService` qui gère les requêtes HTTP.
 
 
