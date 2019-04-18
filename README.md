@@ -310,6 +310,164 @@ deleteBook(id: number) {
 
 # Création des composants
 
+## Le service `form`
+
+Le service va permettre de partager la propriété `book: BookInterface` entre le composant `form`et les composants `create` et `edit`.
+
+### Création du service
+
+```bash
+ng generate service modules/books/services/BooksForm
+```
+
+
+### Importer les dépendances du service
+
+Importer les dépendances du service dans le fichier du composant `app/modules/books/services/books-form.service.ts`.
+
+- L'interface `BookInterface`
+
+```typescript
+import { Injectable } from '@angular/core';
+import { BookInterface } from './../interfaces/books';
+```
+
+
+### Ajouter les propriétés
+
+```typescript
+export class BooksFormService {
+  book: BookInterface = {
+    title: null,
+    description: null,
+    price: null
+  };
+}
+```
+
+## Le composant `form`
+
+Le composant `form` est dédié à l'affichage de la liste des livres.
+
+### Créer le composant
+
+```bash
+ng generate component modules/books/components/form
+```
+
+### Importer le composant dans le module `book`
+
+Angular importe automatiquement le composant dans le module `books.module.ts`.
+
+Vérifier l'importation et la déclaration
+
+```typescript
+import { FormComponent } from './components/form/form.component';
+// ...
+@NgModule({
+  declarations: [
+    FormComponent
+  ],
+})
+```
+
+
+### Importation des dépendances du composant
+
+Importer les dépendances du composant dans le fichier du composant `index.component.ts`.
+
+- Le service `BooksFormService`
+- L'interface `BookInterface`
+
+```typescript
+import { Component, Input } from '@angular/core';
+import { BookInterface } from './../../interfaces/books';
+import { BooksFormService } from './../../services/books-form.service';
+// ...
+constructor(private bookForm: BooksFormService) { }
+```
+
+
+### Modifier le HTML du composant
+
+Créer la partie interne du formulaire (les champs).  
+La directive `ngModel` est fournie par le propriété `@Input book`
+
+```html
+<div class="form-group">
+  <label for="title">Title *</label>
+  <input 
+    type="text" 
+    id="title" 
+    name="title"
+    [(ngModel)]="book.title"
+    #title="ngModel"
+    class="form-control" 
+    required>
+    <div class="helper" *ngIf="isSubmitted && title.invalid">Title is required</div>
+</div>
+
+<div class="form-group">
+  <label for="description">Description</label>
+  <textarea 
+    id="description" 
+    name="description" 
+    [(ngModel)]="book.description"
+    #description="ngModel"
+    class="form-control"
+    cols="30" 
+    rows="10"></textarea>
+</div>
+
+<div class="form-group">
+  <label for="price">Price</label>
+  <input 
+    type="number" 
+    id="price"
+    name="price" 
+    [(ngModel)]="book.price"
+    #price="ngModel"
+    step="0.01" 
+    class="form-control"
+    required>
+    <div class="helper" *ngIf="isSubmitted && price.invalid">Price is required</div>
+</div>
+
+<button 
+  type="submit" 
+  class="btn btn-success"
+  [disabled]="isSubmission">Submit</button>
+```
+
+
+### Modifier le composant
+
+#### Modifier le sélecteur
+
+```typescript
+@Component({
+  selector: 'book-form',
+})
+```
+
+#### Modifier la classe
+
+Ajouter la requête dans la classe IndexComponent
+
+```typescript
+export class FormComponent {
+  
+  // On transmet le model `book`au formulaire HTML
+  @Input() book: BookInterface = this.bookForm.book;
+
+  constructor(
+    private bookForm: BooksFormService
+  ) {}
+}
+```
+
+
+
 ## Le composant `index`
 
 Le composant `index` est dédié à l'affichage de la liste des livres.
@@ -458,6 +616,7 @@ Importer les dépendances du composant dans le fichier du composant `create.comp
 
 - Le module de requêtes HTTP `@angular/common/http`
 - Le service `BookService`
+- Le service `BooksFormService`
 - L'interface `BookInterface`
 
 ```typescript
@@ -466,9 +625,12 @@ import { Router } from "@angular/router"
 
 import { BooksService } from './../../services/books.service';
 import { BookInterface } from './../../interfaces/books';
+import { BooksFormService } from './../../services/books-form.service';
+
 // ...
 constructor(
-  private http: HttpClient,
+  private booksService: BooksService,
+  private bookForm: BooksFormService,
   private router: Router
 ) {}
 ```
@@ -480,53 +642,8 @@ constructor(
 <h2>Create Book</h2>
 
 <form #bookForm="ngForm" (ngSubmit)="onSubmit( bookForm )">
-
-<div [hidden]="!error">{{ error }}</div>
-
-  <div class="form-group">
-    <label for="title">Title *</label>
-    <input 
-      type="text" 
-      id="title" 
-      name="title"
-      [(ngModel)]="book.title"
-      #title="ngModel"
-      class="form-control" 
-      required>
-      <div class="helper" *ngIf="isSubmitted && title.invalid">Title is required</div>
-  </div>
-
-  <div class="form-group">
-    <label for="description">Description</label>
-    <textarea 
-      id="description" 
-      name="description" 
-      [(ngModel)]="book.description"
-      #description="ngModel"
-      class="form-control"
-      cols="30" 
-      rows="10"></textarea>
-  </div>
-
-  <div class="form-group">
-    <label for="price">Price</label>
-    <input 
-      type="number" 
-      id="price"
-      name="price" 
-      [(ngModel)]="book.price"
-      #price="ngModel"
-      step="0.01" 
-      class="form-control"
-      required>
-      <div class="helper" *ngIf="isSubmitted && price.invalid">Price is required</div>
-  </div>
-
-  <button 
-    type="submit" 
-    class="btn btn-success"
-    [disabled]="isSubmission">Submit</button>
-
+  <div [hidden]="!error">{{ error }}</div>
+  <book-form></book-form>
 </form>
 ```
 
@@ -540,15 +657,16 @@ export class CreateComponent {
   isSubmission = false;
   error: string = null;
 
-  // Note : on ne met pas la propriété ID
-  book: BookInterface = {
-    title: null,
-    description: null,
-    price: null
-  };
+  // book: BookInterface = {
+  //   title: null,
+  //   description: null,
+  //   price: null
+  // };
+  book: BookInterface = this.bookForm.book;
   
   constructor(
     private booksService: BooksService,
+    private bookForm: BooksFormService,
     private router: Router
   ) {}
 
@@ -749,6 +867,8 @@ Importer les dépendances du composant dans le fichier du composant `create.comp
 - Le module de gestion du routage `@angular/router`
 - L'interface `BookInterface`
 - La classe `Book`
+- Le service `BooksService`
+- Le service `BooksFormService`
 
 ```typescript
 import { Component, OnInit } from '@angular/core';
@@ -757,6 +877,8 @@ import { ActivatedRoute, Router } from "@angular/router"
 import { BooksService } from './../../services/books.service';
 import { BookInterface } from './../../interfaces/books';
 import { Book } from './../../classes/books';
+import { BooksFormService } from './../../services/books-form.service';
+
 // ...
 constructor(
     private booksService: BooksService,
@@ -781,50 +903,7 @@ constructor(
   <form #bookForm="ngForm" (ngSubmit)="onSubmit( bookForm )">
   
     <div [hidden]="!error">{{ error }}</div>
-    
-    <div class="form-group">
-      <label for="title">Title *</label>
-      <input 
-        type="text" 
-        id="title" 
-        name="title"
-        [(ngModel)]="book.title"
-        #title="ngModel"
-        class="form-control" 
-        required>
-        <div class="helper" *ngIf="isSubmitted && title.invalid">Title is required</div>
-    </div>
-  
-    <div class="form-group">
-      <label for="description">Description</label>
-      <textarea 
-        id="description" 
-        name="description" 
-        [(ngModel)]="book.description"
-        #description="ngModel"
-        class="form-control"
-        cols="30" 
-        rows="10"></textarea>
-    </div>
-  
-    <div class="form-group">
-      <label for="price">Price</label>
-      <input 
-        type="number" 
-        id="price"
-        name="price" 
-        [(ngModel)]="book.price"
-        #price="ngModel"
-        step="0.01" 
-        class="form-control"
-        required>
-        <div class="helper" *ngIf="isSubmitted && price.invalid">Price is required</div>
-    </div>
-  
-    <button 
-      type="submit" 
-      class="btn btn-success"
-      [disabled]="isSubmission">Submit</button>
+    <book-form></book-form>
   
   </form>
 </ng-template>
@@ -841,11 +920,13 @@ export class EditComponent implements OnInit {
   isSubmission: boolean = false;
   error: string = null;
 
-  book: BookInterface;
+  // book: BookInterface;
+  book: BookInterface = this.bookForm.book;
   bookID: number;
 
   constructor(
     private booksService: BooksService,
+    private bookForm: BooksFormService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -856,7 +937,7 @@ export class EditComponent implements OnInit {
 
     // Interrogation du serveur
     this.booksService.getBook( this.bookID ).subscribe(
-      resp => this.book = new Book(
+      resp => this.book = this.bookForm.book = new Book(
         resp.body.id,
         resp.body.title,
         resp.body.price,
@@ -903,7 +984,8 @@ cd my-project
 ng generate module modules/books --module=app
 ng generate interface modules/books/interfaces/Books
 ng generate interface modules/books/classes/Books
-ng generate service modules/books/services/books
+ng generate service modules/books/services/Books
+ng generate service modules/books/services/BooksForm
 ng generate component modules/books/components/index
 ng generate component modules/books/components/create
 ng generate component modules/books/components/details

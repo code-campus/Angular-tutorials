@@ -9,6 +9,7 @@ import { Router } from "@angular/router"
  */
 import { BooksService } from './../../services/books.service';
 import { BookInterface } from './../../interfaces/books';
+import { BooksFormService } from './../../services/books-form.service';
 
 @Component({
   templateUrl: './create.component.html',
@@ -19,15 +20,12 @@ export class CreateComponent {
   isSubmitted: boolean = false;
   isSubmission: boolean = false;
   error: string = null;
-
-  book: BookInterface = {
-    title: null,
-    description: null,
-    price: null
-  };
+  
+  book: BookInterface = this.bookForm.book;
   
   constructor(
     private booksService: BooksService,
+    private bookForm: BooksFormService,
     private router: Router
   ) {}
 

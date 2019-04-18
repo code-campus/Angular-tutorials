@@ -15,6 +15,7 @@ import { IndexComponent } from './components/index/index.component';
 import { CreateComponent } from './components/create/create.component';
 import { DetailsComponent } from './components/details/details.component';
 import { EditComponent } from './components/edit/edit.component';
+import { FormComponent } from './components/form/form.component';
 
 const routes: Routes = [
   // Books Index
@@ -60,6 +61,7 @@ const routes: Routes = [
     CreateComponent,
     DetailsComponent,
     EditComponent,
+    FormComponent,
     // DeleteComponent,
   ],
   imports: [

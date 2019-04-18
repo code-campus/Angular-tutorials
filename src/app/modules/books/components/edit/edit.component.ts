@@ -10,6 +10,7 @@ import { ActivatedRoute, Router } from "@angular/router"
 import { BooksService } from './../../services/books.service';
 import { BookInterface } from './../../interfaces/books';
 import { Book } from './../../classes/books';
+import { BooksFormService } from './../../services/books-form.service';
 
 @Component({
   templateUrl: './edit.component.html',
@@ -22,11 +23,12 @@ export class EditComponent implements OnInit {
   isSubmission: boolean = false;
   error: string = null;
 
-  book: BookInterface;
+  book: BookInterface = this.bookForm.book;
   bookID: number;
 
   constructor(
     private booksService: BooksService,
+    private bookForm: BooksFormService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -38,7 +40,7 @@ export class EditComponent implements OnInit {
 
     // Interrogation du serveur
     this.booksService.getBook( this.bookID ).subscribe(
-      resp => this.book = new Book(
+      resp => this.book = this.bookForm.book = new Book(
         resp.body.id,
         resp.body.title,
         resp.body.price,

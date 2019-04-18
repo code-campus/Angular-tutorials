@@ -1,0 +1,43 @@
+<div class="form-group">
+  <label for="title">Title *</label>
+  <input 
+    type="text" 
+    id="title" 
+    name="title"
+    [(ngModel)]="book.title"
+    #title="ngModel"
+    class="form-control" 
+    required>
+    <div class="helper" *ngIf="isSubmitted && title.invalid">Title is required</div>
+</div>
+
+<div class="form-group">
+  <label for="description">Description</label>
+  <textarea 
+    id="description" 
+    name="description" 
+    [(ngModel)]="book.description"
+    #description="ngModel"
+    class="form-control"
+    cols="30" 
+    rows="10"></textarea>
+</div>
+
+<div class="form-group">
+  <label for="price">Price</label>
+  <input 
+    type="number" 
+    id="price"
+    name="price" 
+    [(ngModel)]="book.price"
+    #price="ngModel"
+    step="0.01" 
+    class="form-control"
+    required>
+    <div class="helper" *ngIf="isSubmitted && price.invalid">Price is required</div>
+</div>
+
+<button 
+  type="submit" 
+  class="btn btn-success"
+  [disabled]="isSubmission">Submit</button>
