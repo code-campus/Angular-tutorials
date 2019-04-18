@@ -1,0 +1,18 @@
+<h2>Books list</h2>
+
+<ng-container *ngIf="isLoading; then loading else loaded"></ng-container>
+
+<ng-template #loading>
+  loading...
+</ng-template>
+
+<ng-template #loaded>
+  <ul>
+
+    <li *ngFor="let book of books; let i = index">
+      {{i}}
+      <a [routerLink]="['/book', book.id]">{{book.title}}</a>
+    </li>
+    
+  </ul>
+</ng-template>

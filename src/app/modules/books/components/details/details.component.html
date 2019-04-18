@@ -1,0 +1,22 @@
+<h2>Book Details</h2>
+
+<ng-container *ngIf="isLoading; then loading else loaded"></ng-container>
+
+<ng-template #loading>
+  loading...
+</ng-template>
+
+<ng-template #loaded>
+  <ul>
+    <li>Id: {{ book.id }}</li>
+    <li>Title: {{ book.title }}</li>
+    <li>Description: {{ book.description }}</li>
+    <li>Price: {{ book.price }}</li>
+  </ul>
+
+  <a [routerLink]="['/book', book.id, 'edit']">Edit</a> - 
+  <button 
+    type="button" 
+    [disabled]="inDeletion"
+    (click)="onDelete();">Delete</button>
+</ng-template>
