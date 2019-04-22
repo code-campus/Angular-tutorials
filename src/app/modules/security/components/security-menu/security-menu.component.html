@@ -1,16 +1,4 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
-</div>
-
 <nav>
-  <a [routerLink]="['/']">Home</a> - 
-  <a [routerLink]="['private']">Private</a>
-</nav>
-
-<!-- <nav>
 
   <ng-template [ngIf]="currentUser" [ngIfElse]="loggedOut">
     <a [routerLink]="['/profile']">{{ currentUser.firstname }}</a> - 
@@ -22,8 +10,4 @@
     <a [routerLink]="['/login']">Login</a>
   </ng-template>
 
-</nav> -->
-
-<security-menu></security-menu>
-
-<router-outlet></router-outlet>
+</nav>
