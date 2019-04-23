@@ -17,9 +17,60 @@ import { RenewPasswordInterface } from './../../interfaces/renew-password';
 })
 export class RenewPasswordComponent implements OnInit {
 
-  constructor() { }
+  renewPasswordForm: FormGroup;
+  loading: boolean = false;
+  submitted: boolean = false;
+  returnUrl: string;
+  passwords: RenewPasswordInterface;
+  error = '';
 
-  ngOnInit() {
+  constructor(
+      private formBuilder: FormBuilder,
+      private router: Router,
+      private authenticationService: AuthenticationService
+  ) {}
+
+  ngOnInit(): void {
+    this.renewPasswordForm = this.formBuilder.group({
+      passwordOld: ['', Validators.required],
+      passwordNew: ['', Validators.required],
+      passwordConfirmation: ['', Validators.required],
+    });
   }
+
+  onSubmit(): void {
+    this.submitted = true;
+
+    // stop here if form is invalid
+    if (this.renewPasswordForm.invalid) {
+      return;
+    }
+
+    this.loading = true;
+    this.passwords = {
+      passwordOld: this.f.passwordOld.value,
+      passwordNew: this.f.passwordNew.value,
+      passwordConfirmation: this.f.passwordConfirmation.value,
+    };
+
+    this.authenticationService.renewPassword(this.passwords)
+      .pipe(first())
+      .subscribe(
+        data => {
+          this.router.navigate(['/profile']);
+          console.log(data);
+
+          // this.loading = false;
+          // this.submitted = false;
+          // this.renewPasswordForm.reset();
+        },
+        error => {
+          this.error = error;
+          this.loading = false;
+        });
+  }
+
+  // convenience getter for easy access to form fields
+  get f() { return this.renewPasswordForm.controls; }
 
 }

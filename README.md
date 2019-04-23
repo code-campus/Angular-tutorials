@@ -599,7 +599,19 @@ export class AuthenticationService {
 
   }
 
-  // TODO: Ajout de la méthode `renewPassword`
+  /**
+   * Renew Password
+   */
+  renewPassword(passwords: RenewPasswordInterface) {
+
+    var url = environment.apiEndpoint + 'forgotten-password';
+
+    return this.http.post<any>(url, passwords, {headers: Headers})
+      .pipe(map(
+        response => {
+          return response;
+        }));
+  }
 }
 ```
 
@@ -843,7 +855,7 @@ export class RegisterComponent implements OnInit {
 
 </form>
 
-<a [hidden]="currentUser" [routerLink]="['/login']">Login</a>
+<a [routerLink]="['/login']">Login</a>
 ```
 
 
@@ -1019,8 +1031,8 @@ export class LoginComponent implements OnInit {
 	
 </form>
 
-<a [hidden]="currentUser" [routerLink]="['register']">Register</a> - 
-<a [hidden]="currentUser" [routerLink]="['forgotten-password']">Forgotten Password</a> 
+<a [routerLink]="['register']">Register</a> - 
+<a [routerLink]="['forgotten-password']">Forgotten Password</a> 
 ```
 
 
@@ -1176,13 +1188,13 @@ export class ForgottenPasswordComponent implements OnInit {
 
 </form>
 
-<a [hidden]="currentUser" [routerLink]="['/register']">Register</a> - 
-<a [hidden]="currentUser" [routerLink]="['/login']">Login</a> 
+<a [routerLink]="['/register']">Register</a> - 
+<a [routerLink]="['/login']">Login</a> 
 ```
 
 
 
-## XXX Création du composant `renewPassword`
+## Création du composant `renewPassword`
 
 ### Création du fichier
 
@@ -1259,11 +1271,103 @@ constructor(
 #### Modifier la classe
 
 ```typescript
+export class RenewPasswordComponent implements OnInit {
+
+  renewPasswordForm: FormGroup;
+  loading: boolean = false;
+  submitted: boolean = false;
+  returnUrl: string;
+  passwords: RenewPasswordInterface;
+  error = '';
+
+  constructor(
+      private formBuilder: FormBuilder,
+      private router: Router,
+      private authenticationService: AuthenticationService
+  ) {}
+
+  ngOnInit(): void {
+    this.renewPasswordForm = this.formBuilder.group({
+      passwordOld: ['', Validators.required],
+      passwordNew: ['', Validators.required],
+      passwordConfirmation: ['', Validators.required],
+    });
+  }
+
+  onSubmit(): void {
+    this.submitted = true;
+
+    // stop here if form is invalid
+    if (this.renewPasswordForm.invalid) {
+      return;
+    }
+
+    this.loading = true;
+    this.passwords = {
+      passwordOld: this.f.passwordOld.value,
+      passwordNew: this.f.passwordNew.value,
+      passwordConfirmation: this.f.passwordConfirmation.value,
+    };
+
+    this.authenticationService.renewPassword(this.passwords)
+      .pipe(first())
+      .subscribe(
+        data => {
+          this.router.navigate([this.returnUrl]);
+        },
+        error => {
+          this.error = error;
+          this.loading = false;
+        });
+  }
+
+  // convenience getter for easy access to form fields
+  get f() { return this.renewPasswordForm.controls; }
+
+}
 ```
 
 ### Modifier le HTML du composant
 
 ```html
+<h2>Renew Password</h2>
+
+<form [formGroup]="renewPasswordForm" (ngSubmit)="onSubmit()">
+
+	<div class="form-group">
+		<label for="passwordOld">Old Password</label>
+		<input type="password" formControlName="passwordOld" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.passwordOld.errors }" />
+		<div *ngIf="submitted && f.passwordOld.errors" class="invalid-feedback">
+			<div *ngIf="f.passwordOld.errors.required">Old Password is required</div>
+		</div>
+  </div>
+  
+	<div class="form-group">
+		<label for="passwordNew">New Password</label>
+		<input type="password" formControlName="passwordNew" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.passwordNew.errors }" />
+		<div *ngIf="submitted && f.passwordNew.errors" class="invalid-feedback">
+			<div *ngIf="f.passwordNew.errors.required">New Password is required</div>
+		</div>
+  </div>
+  
+	<div class="form-group">
+		<label for="passwordConfirmation">Confirmation Password</label>
+		<input type="password" formControlName="passwordConfirmation" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.passwordConfirmation.errors }" />
+		<div *ngIf="submitted && f.passwordConfirmation.errors" class="invalid-feedback">
+			<div *ngIf="f.passwordConfirmation.errors.required">Confirmation Password is required</div>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<button [disabled]="loading" class="btn btn-primary">Login</button>
+		<img *ngIf="loading" class="pl-2" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+	</div>
+
+	<div *ngIf="error" class="alert alert-danger">{{error}}</div>
+
+</form>
+
+<a [routerLink]="['/profile']">Profile</a>
 ```
 
 
@@ -1358,6 +1462,8 @@ export class ProfileComponent {
 <div>Firstname: {{ user.firstname }}</div>
 <div>Lastname: {{ user.lastname }}</div>
 <div>Email: {{ user.email }}</div>
+
+<a [routerLink]="['/renew-password']">Renew Password</a>
 ```
 
 
@@ -1739,36 +1845,23 @@ ng serve
 ```
 
 
+# Synthèse des commandes
 
-# Création du module `security`
+```bash
+ng generate module modules/security --module=app
+ng generate guard modules/security/guards/auth
 
-
-
-
-
-
-
-
-
-
-
-
+ng generate component modules/security/components/user
+ng generate component modules/security/components/register
+ng generate component modules/security/components/login
+ng generate component modules/security/components/forgotten-password
+ng generate component modules/security/components/renew-password
+```
 
 
 
 
-
-
-
-
-## Création des interfaces
-
-
-### Interface `forgotten-password`
-### Interface `reset-password`
-### Interface `renew-password`
-
-
+<!-- 
 # Création du service
 
 Le service va permettre le passge d'information entre les composants du module.
@@ -1841,239 +1934,4 @@ register(user: RegisterInterface): Observable<HttpResponse<RegisterInterface>>  
   );
 }
 ```
-
-### La méthode `login`
-
-```typescript
-```
-
-### La méthode `forgottenPassword`
-
-```typescript
-```
-
-### La méthode `resetPassword`
-
-```typescript
-```
-
-### La méthode `renewPassword`
-
-```typescript
-```
-
-### La méthode `setSecurityToken`
-
-```typescript
-setSecurityToken(token: TokenInterface) {
-  this.securityToken.next( token );
-}
-```
-
-### La méthode `getSecurityToken`
-
-```typescript
-getSecurityToken(): Observable<TokenInterface> {
-  return this.securityToken;
-}
-```
-
-
-
-# Création des composants
-
-## Le composant `user`
-
-Le composant `user` permet de gérer l'affichage du profile.
-
-### Création du composant
-
-```bash
-ng generate component modules/security/components/user
-```
-
-### Importer le composant dans le module `security`
-
-```typescript
-import { UserComponent } from './components/user/user.component';
-// ...
-@NgModule({
-  declarations: [
-    UserComponent
-  ],
-})
-```
-
-### Importation des dépendances du composant
-
-### Modifier le HTML du composant
-
-### Modifier le composant
-
-
-
-## Le composant `user-nav`
-
-Le composant `user-nav` permet de gérer le menu utilisateur.
-
-### Création du composant
-
-```bash
-ng generate component modules/security/components/user-nav
-```
-
-### Importer le composant dans le module principal de l'application
-
-Importer le composant dans le fichier `app/app.component.ts` 
-
-```typescript
-import { UserNavComponent } from './modules/security/components/user-nav/user-nav.component';
-// ...
-@NgModule({
-  declarations: [
-    UserNavComponent
-  ],
-})
-```
-
-### Importation des dépendances du composant
-
-### Modifier le HTML du composant
-
-```html
-<nav>
-  <a [routerLink]="['/']">Homepage</a> - 
-  <a [routerLink]="['register']">Register</a> - 
-  <a [routerLink]="['login']">login</a>
-</nav>
-```
-
-### Modifier le composant
-
-#### Modifier le sélecteur
-
-```typescript
-@Component({
-  selector: 'app-user-nav',
-})
-```
-
-#### Modifier la classe
-
-
-### Ajouter le menu utilisateur à l'application
-
-Dans le fichier `app/app.component.html` par exemple, ajouter :
-
-```html
-<app-user-nav></app-user-nav>
-```
-
-
-
-## Le composant `forgotten-password`
-
-Le composant `forgotten-password` permet de gérer le renouvellement d'un mot de passe.
-
-### Création du composant
-
-```bash
-ng generate component modules/security/components/forgotten-password
-```
-
-### Importer le composant dans le module `security`
-
-```typescript
-import { ForgottenPasswordComponent } from './components/forgotten-password/forgotten-password.component';
-// ...
-@NgModule({
-  declarations: [
-    ForgottenPasswordComponent
-  ],
-})
-```
-
-### Importation des dépendances du composant
-
-### Modifier le HTML du composant
-
-### Modifier le composant
-
-
-
-## Le composant `reset-password`
-
-Le composant `reset-password` permet de gérer la demande de mot de passe perdu d'un utilisateur.
-
-### Création du composant
-
-```bash
-ng generate component modules/security/components/reset-password
-```
-
-### Importer le composant dans le module `security`
-
-```typescript
-import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
-// ...
-@NgModule({
-  declarations: [
-    ResetPasswordComponent
-  ],
-})
-```
-
-### Importation des dépendances du composant
-
-### Modifier le HTML du composant
-
-### Modifier le composant
-
-
-
-## Le composant `renew-password`
-
-Le composant `renew-password` permet de gérer le renouvellement d'un mot de passe.
-
-### Création du composant
-
-```bash
-ng generate component modules/security/components/renew-password
-```
-
-### Importer le composant dans le module `security`
-
-```typescript
-import { RenewPasswordComponent } from './components/renew-password/renew-password.component';
-// ...
-@NgModule({
-  declarations: [
-    RenewPasswordComponent
-  ],
-})
-```
-
-### Importation des dépendances du composant
-
-### Modifier le HTML du composant
-
-### Modifier le composant
-
-
-
-
-
-
-
-# Synthèse des commandes
-
-```bash
-ng generate module modules/security --module=app
-ng generate guard modules/security/guards/auth
-
-ng generate component modules/security/components/user
-ng generate component modules/security/components/register
-ng generate component modules/security/components/login
-ng generate component modules/security/components/forgotten-password
-ng generate component modules/security/components/renew-password
-```
+ -->

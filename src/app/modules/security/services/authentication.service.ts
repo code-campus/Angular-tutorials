@@ -14,6 +14,7 @@ import { User } from './../interfaces/user';
 import { RegisterInterface } from './../interfaces/register';
 import { LoginInterface } from './../interfaces/login';
 import { ForgottenPasswordInterface } from './../interfaces/forgotten-password';
+import { RenewPasswordInterface } from './../interfaces/renew-password';
 
 const Headers = new HttpHeaders({
     'Content-Type': 'application/json' 
@@ -106,5 +107,17 @@ export class AuthenticationService {
 
     }
 
-    // TODO: Ajout de la méthode `renewPassword`
+    /**
+     * Renew Password
+     */
+    renewPassword(passwords: RenewPasswordInterface) {
+
+        var url = environment.apiEndpoint + 'renew-password';
+
+        return this.http.post<any>(url, passwords, {headers: Headers})
+            .pipe(map(
+                response => {
+                    return response;
+                }));
+    }
 }
