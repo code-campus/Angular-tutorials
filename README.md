@@ -25,6 +25,13 @@
 
 ---
 
+## Les librairies externes
+
+- Chapitre xx : [Bootstrap](https://github.com/OSW3-Campus/Angular-tutorials/tree/bootstrap)
+
+
+---
+
 ## Les fonctionnalités essentielles
 
 - Chapitre xx : [Web Services](https://github.com/OSW3-Campus/Angular-tutorials/tree/web-services)
